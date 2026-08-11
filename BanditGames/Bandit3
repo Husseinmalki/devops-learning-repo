@@ -9,6 +9,8 @@ The ls command is not enough to find hidden files
   bandit3@bandit:~/inhere$ ls
   bandit3@bandit:~/inhere$ 
 
+The cd command can be using to change directory.
+
 We must attach the -a option which shows hidden files
   bandit3@bandit:~/inhere$ ls -a
   .  ..  ...Hiding-From-You
