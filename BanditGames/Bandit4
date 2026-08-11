@@ -1,0 +1,36 @@
+SSH in
+    root@ubuntu:~$ ssh bandit4@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the only human-readable file in the inhere directory. Tip: if your terminal is messed up, try the “reset” command.
+
+We first enter the inhere file and see what we are dealing with.
+  bandit4@bandit:~$ ls
+  inhere
+  bandit4@bandit:~$ cd inhere/
+  bandit4@bandit:~/inhere$ ls
+  -file00  -file01  -file02  -file03  -file04  -file05  -file06  -file07  -file08  -file09
+
+if we try and cat one of the files we get.
+  bandit4@bandit:~/inhere$ cat ./-file00
+  Y1[�b1���� ��ɂ�D¬1K0
+This is unreadable to a human. It would take a while to cat each file and find the human readable password.
+
+We can use the file command to check all of them.
+The file command determins the file type.
+    bandit4@bandit:~/inhere$ file ./*
+    ./-file00: data
+    ./-file01: data
+    ./-file02: data
+    ./-file03: data
+    ./-file04: data
+    ./-file05: data
+    ./-file06: OpenPGP Public Key
+    ./-file07: ASCII text
+    ./-file08: data
+    ./-file09: Motorola S-Record; binary data in text format
+
+As we can see file07 has ASCII text which is human readable. 
+    bandit4@bandit:~/inhere$ cat ./-file07
+    6C7h9GD8M6ai5nr7wo1RonrzFjj9yIrG
+
+The password is 6C7h9GD8M6ai5nr7wo1RonrzFjj9yIrG
