@@ -1,0 +1,3 @@
+We login as usual 
+    root@ubuntu:~$ ssh bandit2@bandit.labs.overthewire.org -p 2220
+    
