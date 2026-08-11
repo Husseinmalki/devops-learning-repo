@@ -1,0 +1,18 @@
+The SSH is used.
+    root@ubuntu:~$ ssh bandit3@bandit.labs.overthewire.org -p 2220
+The password for the next level is stored in a hidden file in the inhere directory.
+
+The ls command is not enough to find hidden files
+  bandit3@bandit:~$ ls
+  inhere
+  bandit3@bandit:~$ cd inhere
+  bandit3@bandit:~/inhere$ ls
+  bandit3@bandit:~/inhere$ 
+
+We must attach the -a option which shows hidden files
+  bandit3@bandit:~/inhere$ ls -a
+  .  ..  ...Hiding-From-You
+  bandit3@bandit:~/inhere$ cat ./...Hiding-From-You 
+  xzTXq1rDJQVVAzdv5cHq1TQytTWufAMq
+
+The password is xzTXq1rDJQVVAzdv5cHq1TQytTWufAMq
