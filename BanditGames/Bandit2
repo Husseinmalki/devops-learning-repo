@@ -1,3 +1,24 @@
-We login as usual 
+We login as usual with the password gained from the previous level.
     root@ubuntu:~$ ssh bandit2@bandit.labs.overthewire.org -p 2220
-    
+
+The next password is stored in a file called --spaces in this filename-- located in the home directory.
+
+We use the same method as the previous level to gain the password. We can start entering the name of the file and press tab to finish.
+        bandit2@bandit:~$ ls
+        --spaces in this filename--
+        bandit2@bandit:~$ cat ./--spaces\ in\ this\ filename-- 
+        7ZZ2LFrykP2zEyvBl4m3clcL7tGYJPME
+
+As this file has spaces in the name, we use \ to mark the spaces.
+If we don't it will treat every new word as a seperate file. e.g
+        bandit2@bandit:~$ cat ./--spaces in this filename-- 
+        cat: ./--spaces: No such file or directory
+        cat: in: No such file or directory
+        cat: this: No such file or directory
+        cat: filename--: No such file or directory
+
+We can also use "" to deal with spaces.
+        bandit2@bandit:~$ cat ./"--spaces in this filename--"
+        7ZZ2LFrykP2zEyvBl4m3clcL7tGYJPME
+
+The password is 7ZZ2LFrykP2zEyvBl4m3clcL7tGYJPME
