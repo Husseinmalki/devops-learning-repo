@@ -1,0 +1,27 @@
+The first Level is a simple SSH login to a server.
+
+root@ubuntu:~$ ssh bandit0@bandit.labs.overthewire.org -p 2220
+
+we always login to port 2220 using the -p 2220 command
+
+bandit0 is the User we are logging into 
+
+bandit.labs.overthewire.org is the server we are logging into
+
+The password is bandit0
+
+Once we are in there is a file named readme
+
+we use the cat command to read it.
+  bandit0@bandit:~$ ls
+  readme
+  bandit0@bandit:~$ cat readme
+  Congratulations on your first steps into the bandit game!!
+  Please make sure you have read the rules at https://overthewire.org/rules/
+  If you are following a course, workshop, walkthrough or other educational activity,
+  please inform the instructor about the rules as well and encourage them to
+  contribute to the OverTheWire community so we can keep these games free!
+  
+  The password you are looking for is: 6y2kwnwK6grgvwvpvLaa2T1cpFEKOhNR
+
+The password is 6y2kwnwK6grgvwvpvLaa2T1cpFEKOhNR
