@@ -1,0 +1,19 @@
+We use the same SSH command to login to the next level
+    root@ubuntu:~$ ssh bandit1@bandit.labs.overthewire.org -p 2220
+This time we are logging in with the user bandit1
+we are using the password from the previous level.
+6y2kwnwK6grgvwvpvLaa2T1cpFEKOhNR
+
+The next password is stored in a file named - in the home directory
+    bandit1@bandit:~$ ls
+    -
+    bandit1@bandit:~$ cat -
+    ^C
+Simply using cat - will not work as it is a file that starts with a dash.
+We have to use the full path name
+    bandit1@bandit:~$ cat ./-
+    PK8fYLZg2hnHSz83plBL1iEPKdD3QToB
+
+Once we add ./ before the dash we can read the password.
+
+Password = PK8fYLZg2hnHSz83plBL1iEPKdD3QToB
