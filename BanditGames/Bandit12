@@ -1,0 +1,127 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit12@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the file data.txt, which is a hexdump of a file that has been repeatedly compressed. For this level it may be useful to create a directory under /tmp in which you can work.
+Use mkdir with a hard to guess directory name. Or better, use the command “mktemp -d”. Then copy the datafile using cp, and rename it using mv (read the manpages!)
+
+Check the file.
+    bandit12@bandit:~$ ls
+    data.txt
+    bandit12@bandit:~$ cat data.txt 
+    00000000: 1f8b 0808 a6f0 3b6a 0203 6461 7461 322e  ......;j..data2.
+    00000010: 6269 6e00 0144 02bb fd42 5a68 3931 4159  bin..D...BZh91AY
+    00000020: 2653 5904 ab91 e100 001c 7fff fffb bebf  &SY.............
+    00000030: f1fb dfbb be7f f57d fef5 5f8f ffcd b7b6  .......}.._.....
+    00000040: 19ff f6df af7f feae fff6 7fff 3001 3b6d  ............0.;m
+    00000050: 5b10 0000 001a 341a 34f5 000d 0068 0000  [.....4.4....h..
+    00000060: 0000 0683 2068 1ea0 3400 0d1e a034 19a8  .... h..4....4..
+    00000070: 0680 3d4d 00d0 69ea 69a6 0f54 41a0 00d1  ..=M..i.i..TA...
+    00000080: a034 d0c8 f506 8c86 8068 1a32 01a0 c40c  .4.......h.2....
+    00000090: 8323 40c8 0681 8803 4d32 1a34 0320 0000  .#@.....M2.4. ..
+    000000a0: 0d19 00d0 1a7a 834d 0ca6 8343 4000 00d1  .....z.M...C@...
+    000000b0: a006 87a8 0064 0003 41ea 321a 0321 91ea  .....d..A.2..!..
+    000000c0: 001a 3403 4686 81ea 0069 a680 0d3d 434d  ..4.F....i...=CM
+
+Lets first make a temp directory using mktemp -d
+    bandit12@bandit:~$ mktemp -d 
+    /tmp/tmp.Ibue94e8OL
+    bandit12@bandit:~$ cd /tmp/tmp.Ibue94e8OL
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ 
+
+Lets then copy that file over to the temp directory.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cp /home/bandit12/data.txt /tmp/tmp.Ibue94e8OL
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    data.txt
+
+We then reverse the hex dump of the file
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ xxd -r  data.txt hexdump
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    data.txt  hexdump
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat hexdump 
+    �4��=M�i�i�TA�Ѡ4������h2������������߻��}��_��ͷ���߯�����0;m[44�
+    �z�M                      �#@���M24 
+    =CM ��!�H��dA�2!Z>��6�����fc͸�c�ǚ�J�Ȧ���%p셨�>��ďc�n��L��Y�'�C]F����֜���-�L�;�Ee9�l�Kr�����L����
+    etc...
+
+Through the original data.txt we look at the first bytes to determine what compression command was used.
+     bandit12@bandit:~$ cat data.txt 
+     00000000: 1f8b 0808 a6f0 3b6a 0203 6461 7461 322e  ......;j..data2.
+
+we can see it starts with 1f8b 08
+This is the compression of gzip
+
+So we move the file to a gzip format and decompress it.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ mv hexdump compressed.gz
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed.gz  data.txt
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ gzip -d compressed.gz 
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed  data.txt
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat compressed 
+    �4��=M�i�i�TA�Ѡ4������h2��_��ͷ���߯�����0;m[44�
+    �z�M                      �#@���M24 
+
+The file is still not fully uncompressed which means we have to return it to the hexdump state as it is easier to read and then figure out what other compression command was used.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ xxd compressed 
+    00000000: 425a 6839 3141 5926 5359 04ab 91e1 0000  BZh91AY&SY......
+    00000010: 1c7f ffff fbbe bff1 fbdf bbbe 7ff5 7dfe  ..............}.
+
+425a is the signiture for bzip2 compression so we follow the same steps as before
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ mv compressed compressed2.bz2
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed2.bz2  data.txt
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ bzip2 -d compressed2.bz2 
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed2  data.txt
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat compressed2 
+    ��;jdata4.bin��KHT��3*�
+    �0��� ��{g�-|��_ V����BeL�P�*��A�4h�
+
+The file still has a compression so we keep repeating the process.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ xxd compressed2 
+    00000000: 1f8b 0808 a6f0 3b6a 0203 6461 7461 342e  ......;j..data4.
+
+1f8b 08 again so its gzip
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ mv compressed2 compressed3.gz
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed3.gz  data.txt
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ gzip -d compressed3.gz 
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat compressed3 
+    data5.bin0000644000000000000000000002400015216770246011252 0ustar  rootrootdata6.bin0000644000000000000000000000033715216770246011262 0ustar 
+    r2�Mi�otB�=M=@҃�FF�� �dh�����$��F�F��`bƙ��D���������=l�"�3����1�� �����  
+
+Repeat the process again
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ xxd compressed3 | head
+    00000000: 6461 7461 352e 6269 6e00 0000 0000 0000  data5.bin.......
+
+This time its an archive so we use tar.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ mv compressed3 compressed4.tar
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ tar -xf compressed4.tar 
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed4.tar  data.txt  data5.bin
+
+data5.bin seems to be another archive so we repeat.
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ tar -xf data5.bin
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed4.tar  data.txt  data5.bin  data6.bin
+repeat again with data6.bin
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ tar -xf data6.bin
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed4.tar  data.txt  data5.bin  data6.bin  data8.bin
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat data8.bin 
+    ��;jdata9.bin
+                 �HU(H,..�/JQ�,V(
+                                 �
+now we do the final decompression on data8.bin
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ xxd data8.bin 
+    00000000: 1f8b 0808 a6f0 3b6a 0203 6461 7461 392e  ......;j..data9.
+    00000010: 6269 6e00 0bc9 4855 2848 2c2e 2ecf 2f4a  bin...HU(H,.../J
+which is a gzip compression
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ mv data8.bin data8.gz
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ gzip -d data8.gz 
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ ls
+    compressed4.tar  data.txt  data5.bin  data6.bin  data8
+    bandit12@bandit:/tmp/tmp.Ibue94e8OL$ cat data8
+    The password is qQYQiHOBPR8zR61qxYqX45quvihF2uzk
+
+And we have the password.
