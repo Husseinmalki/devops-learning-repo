@@ -1,0 +1,154 @@
+SSH in.
+ssh bandit5@bandit.labs.overthewire.org -p 2220
+
+
+The password for the next level is stored in a file somewhere under the inhere directory and has all of the following properties:
+
+human-readable
+1033 bytes in size
+not executable
+
+lets first check how the directory is layed out.
+    bandit5@bandit:~$ ls
+    inhere
+    bandit5@bandit:~$ cd inhere
+    bandit5@bandit:~/inhere$ ls
+    maybehere00  maybehere02  maybehere04  maybehere06  maybehere08  maybehere10  maybehere12  maybehere14  maybehere16  maybehere18
+    maybehere01  maybehere03  maybehere05  maybehere07  maybehere09  maybehere11  maybehere13  maybehere15  maybehere17  maybehere19
+    bandit5@bandit:~/inhere$ cd maybehere00
+    bandit5@bandit:~/inhere/maybehere00$ ls
+    -file1  -file2  -file3  spaces file1  spaces file2  spaces file3
+
+It would take an unreasonable amount of time to go through each folder and check each file.
+
+To detect human readable files we can use the file commmand.
+To detect the file size we can use the du command.
+To detect non-executable files we can use the find command.
+
+We use the file command to search through each folder 
+    bandit5@bandit:~/inhere$ file */*
+    maybehere00/-file1:       ASCII text, with very long lines (1038)
+    maybehere00/-file2:       ASCII text, with very long lines (9387)
+    maybehere00/-file3:       OpenPGP Secret Key
+    maybehere00/spaces file1: ASCII text, with very long lines (6117)
+    maybehere00/spaces file2: ASCII text, with very long lines (6849)
+    maybehere00/spaces file3: data
+    maybehere01/-file1:       ASCII text, with very long lines (6027)
+    maybehere01/-file2:       ASCII text
+    maybehere01/-file3:       data
+    maybehere01/spaces file1: ASCII text, with very long lines (4138)
+    maybehere01/spaces file2: ASCII text, with very long lines (4542)
+    maybehere01/spaces file3: data
+    maybehere02/-file1:       ASCII text, with very long lines (3800)
+    maybehere02/-file2:       X1 archive data
+    maybehere02/-file3:       data
+    maybehere02/spaces file1: ASCII text, with very long lines (6745)
+    maybehere02/spaces file2: ASCII text, with very long lines (8487)
+    maybehere02/spaces file3: data
+    maybehere03/-file1:       ASCII text, with very long lines (314)
+    maybehere03/-file2:       ASCII text, with very long lines (6594)
+    maybehere03/-file3:       data
+    maybehere03/spaces file1: ASCII text, with very long lines (2189)
+    maybehere03/spaces file2: ASCII text, with very long lines (3384)
+    maybehere03/spaces file3: data
+    maybehere04/-file1:       ASCII text, with very long lines (4409)
+    maybehere04/-file2:       ASCII text, with very long lines (2618)
+    maybehere04/-file3:       data
+    maybehere04/spaces file1: ASCII text, with very long lines (5531)
+    etc...
+File */* the sytax goes as this:
+File = reports the type of argument
+First * = Search through all files in this directory
+/* = Add a slash and then search through all files in this directory
+The */* allows the File command to search through subfolders. 
+However, this still misses hidden folders so we add a .
+File */.*
+    bandit5@bandit:~/inhere$ file */.*
+    maybehere00/.file1: ASCII text, with very long lines (550)
+    maybehere00/.file2: ASCII text, with very long lines (7835)
+    maybehere00/.file3: data
+    maybehere01/.file1: Clarion Developer (v2 and above) memo data
+    maybehere01/.file2: ASCII text, with very long lines (3069)
+    maybehere01/.file3: data
+    maybehere02/.file1: ASCII text, with very long lines (6350)
+    maybehere02/.file2: ASCII text, with very long lines (2576)
+However, this now only shows hidden files.
+So we add {} as a paramter to what we are looking for.
+file */{.,}*
+    bandit5@bandit:~/inhere$ file */{.,}*
+    maybehere00/.file1:       ASCII text, with very long lines (550)
+    maybehere00/.file2:       ASCII text, with very long lines (7835)
+    maybehere00/.file3:       data
+    maybehere01/.file1:       Clarion Developer (v2 and above) memo data
+    maybehere01/.file2:       ASCII text, with very long lines (3069)
+    maybehere01/.file3:       data
+    maybehere02/.file1:       ASCII text, with very long lines (6350)
+    maybehere02/.file2:       ASCII text, with very long lines (2576)
+    maybehere02/.file3:       data
+    maybehere03/.file1:       ASCII text, with very long lines (9768)
+    maybehere03/.file2:       ASCII text, with very long lines (8879)
+    maybehere03/.file3:       data
+    maybehere04/.file1:       ASCII text, with very long lines (2439)
+    maybehere04/.file2:       ASCII text, with very long lines (6143)
+    maybehere04/.file3:       data
+    maybehere05/.file1:       ASCII text, with very long lines (3200)
+    maybehere05/.file2:       ASCII text, with very long lines (5916)
+    maybehere05/.file3:       data
+    maybehere06/.file1:       ASCII text, with very long lines (1270)
+    maybehere06/.file2:       ASCII text, with very long lines (8975)
+    maybehere06/.file3:       data
+    maybehere07/.file1:       ASCII text, with very long lines (3064)
+    maybehere07/.file2:       ASCII text, with very long lines (1000)
+    etc...
+The syntax for the {} is {option A,option B} with the comma as a seperator of values
+In this example, when we enter the sub folder with */ we search through the hidden files {. and then search through the normal files ,} (there is nothing after the comma, this is to indicate all files)
+
+Now we find out the size of the file. 
+We use the du command. This is an example.
+    bandit5@bandit:~/inhere$ cd maybehere00
+    bandit5@bandit:~/inhere/maybehere00$ ls
+    -file1  -file2  -file3  spaces file1  spaces file2  spaces file3
+    bandit5@bandit:~/inhere/maybehere00$ du ./-file2
+    12      ./-file2
+    bandit5@bandit:~/inhere/maybehere00$ du -b ./-file2
+    9388    ./-file2
+As the goal states the password is in a file that is 1033 bytes in size, we add the -b option to get the size of the file in bytes. 
+To do this for all the files we are looking for, we use the | character.
+The | character pastes the output of the previous command into the next. 
+E.g
+    bandit5@bandit:~/inhere$ file */{.,}* | du -b -a
+    503     ./maybehere11/spaces file2
+    8854    ./maybehere11/-file3
+    3147    ./maybehere11/spaces file1
+    8261    ./maybehere11/.file3
+    2501    ./maybehere11/.file2
+    452     ./maybehere11/.file1
+    8845    ./maybehere11/spaces file3
+    4559    ./maybehere11/-file2
+    1211    ./maybehere11/-file1
+
+Using both commands along with grep to only output what we are looking for.
+    bandit5@bandit:~/inhere$ file */{.,}* | grep "ASCII" | du -b -a | grep 1033
+    1033    ./maybehere07/.file2
+We found our file. Lets double check and see if its an executable.
+    bandit5@bandit:~/inhere$ cd maybehere07
+    bandit5@bandit:~/inhere/maybehere07$ ls -la
+    total 56
+    -rwxr-x---  1 root bandit5 3663 Jun 24 14:59 -file1
+    -rw-r-----  1 root bandit5 2488 Jun 24 14:59 -file2
+    -rwxr-x---  1 root bandit5 3362 Jun 24 14:59 -file3
+    drwxr-x---  2 root bandit5 4096 Jun 24 14:59 .
+    drwxr-x--- 22 root bandit5 4096 Jun 24 14:59 ..
+    -rwxr-x---  1 root bandit5 3065 Jun 24 14:59 .file1
+    -rw-r-----  1 root bandit5 1033 Jun 24 14:59 .file2
+    -rwxr-x---  1 root bandit5 1997 Jun 24 14:59 .file3
+    -rwxr-x---  1 root bandit5 4130 Jun 24 14:59 spaces file1
+    -rw-r-----  1 root bandit5 9064 Jun 24 14:59 spaces file2
+    -rwxr-x---  1 root bandit5 1022 Jun 24 14:59 spaces file3
+As we can see file .file2 does not have the executable symbole (which is x) on as the 4th option (-rw"-"r) This means the User does not have execute permissions.
+
+bandit5@bandit:~/inhere/maybehere07$ cat ./.file2
+pXa26xhMWaC2SvDotA4r9EgZkulOeSBW
+
+Password is pXa26xhMWaC2SvDotA4r9EgZkulOeSBW
+
