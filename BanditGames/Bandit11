@@ -1,0 +1,36 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit11@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the file data.txt, where all lowercase (a-z) and uppercase (A-Z) letters have been rotated by 13 positions
+
+Check it
+    bandit11@bandit:~$ ls
+    data.txt
+    bandit11@bandit:~$ cat data.txt 
+    Gur cnffjbeq vf TEBbmJCB8DlA0zTewHxVQ0JPLxMvDkeA
+
+To get the password we must swap all lowercase and uppercase letters by 13 positions, this is commonly known as the ceaser cipher
+We use the tr command to achieve this.
+    bandit11@bandit:~$ cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"
+    The password is GROozWPO8QyN0mGrjUkID0WCYkZiQxrN
+The tr command swaps 2 lists of characters tr (set1) (set2) e.g tr abc zxy would equal a=z b=x c=y when output.
+In this case we need to swap the characters by 13 positions which includes for all upper and lowercase characters.
+
+In theory=
+tr "A-Z" "N-ZA-M"
+This would swap the alphabet
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+with the last 13 characters of the alphabet starting first to make a 13 position swap
+NOPQRSTUVWXYZABCDEFGHIJKLMN
+
+This command would only swap the uppercase letters and would look something like this
+    bandit11@bandit:~$ cat data.txt | tr "A-Z" "N-ZA-M"
+    Tur cnffjbeq vf GRObmWPO8QlN0zGewUxID0WCYxZvQkeN
+
+We do the exact same for the lowercase letters 
+    bandit11@bandit:~$ cat data.txt | tr "a-z" "n-za-m"
+    Ghe password is TEBozJCB8DyA0mTrjHkVQ0JPLkMiDxrA
+
+Then to solve for the password, we combine both solutions.
+    bandit11@bandit:~$ cat data.txt | tr "A-Za-z" "N-ZA-Mn-za-m"
+    The password is GROozWPO8QyN0mGrjUkID0WCYkZiQxrN
