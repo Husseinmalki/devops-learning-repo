@@ -1,0 +1,15 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit10@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the file data.txt, which contains base64 encoded data.
+
+lets check it
+    bandit10@bandit:~$ ls
+    data.txt
+    bandit10@bandit:~$ cat data.txt 
+    VGhlIHBhc3N3b3JkIGlzIHBZZk9ZNkh3VXNEajVyTDlVdnloVTdNQ212OHZONVJvCg==
+
+The data.txt file is encoded in base64. To get the original we must decode it.
+This is done with a simple command of base64 -d
+    bandit10@bandit:~$ base64 -d data.txt 
+    The password is pYfOY6HwUsDj5rL9UvyhU7MCmv8vN5Ro
