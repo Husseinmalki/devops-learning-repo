@@ -1,0 +1,83 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit8@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the file data.txt and is the only line of text that occurs only once
+
+Lets check the file.
+    bandit8@bandit:~$ ls
+    data.txt
+    bandit8@bandit:~$ head data.txt 
+    9E3UGT9z02VsqTV4nvnLWD5pOCYpeMpu
+    O5ffmD1gTxN6wqrVj7s4qCGjViq2Eqa6
+    I8fJN0v9oiPS7HFj6zQJK32Jyn7mYw2Y
+    U6fRtWGxxx2JgitTcRpI8Eni5yrBX5uN
+    vUvJ0fcRGiyPVnxkyQvYT0EPmlYIsUMQ
+    IbdwbkaNWVGPrvL1xQCatdfRxoDKUxma
+    1QDbI0z3b488UD7pbhxxzAscVKVGJIqi
+    vV6s2Yby5gSVRdjhpxtCxVCYgXAcxjaR
+    xmeI3qSdYRGdE1hnvHojftBAH34FmdVh
+    n9CPDhddWtI7LVGVnggcb5BFD3qUbGwL
+
+We need a command that checks unique lines of text. That command is uniq
+From the manual
+    NAME
+           uniq - Report or omit repeated lines.
+    -c, --count
+           prefix lines by the number of occurrences
+    -u, --unique
+           only print unique lines
+
+    bandit8@bandit:~$ uniq -c data.txt 
+          1 9E3UGT9z02VsqTV4nvnLWD5pOCYpeMpu
+          1 O5ffmD1gTxN6wqrVj7s4qCGjViq2Eqa6
+          1 I8fJN0v9oiPS7HFj6zQJK32Jyn7mYw2Y
+          1 U6fRtWGxxx2JgitTcRpI8Eni5yrBX5uN
+          1 vUvJ0fcRGiyPVnxkyQvYT0EPmlYIsUMQ
+If we just use the uniq command with the -c option, it doesn't seem to work. This is due to the file not being sorted.
+The file must be sorted for the uniq command to properly work as seen in the manual.
+    
+    EXTRA
+           Filter adjacent matching lines from INPUT (or standard input), writing to OUTPUT (or standard output).
+    
+           Note: uniq does not detect repeated lines unless they are adjacent.  You may want to sort the input first, or use sort -u without uniq.
+To sort the file we use the sort command.
+    bandit8@bandit:~$ sort data.txt 
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+    1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+    1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+    1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+    1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+
+We then take the output of the sort command and put it into the uniq command with the -u option.
+    bandit8@bandit:~$ sort data.txt | uniq -u
+    EjmOSvuAu7sGAHqHVcBDPirRe9T03kxl
+We can double check this by using the -c option.
+    bandit8@bandit:~$ sort data.txt | uniq -c
+         10 9hSSC3zPcPw0htJNdgMamzXPlbVgc6Ow
+         10 9l2sZl3BIRPtTSvr1ql6aOr4PVbIHxq9
+         10 9lc65d38xb5Mf2X1HmJYtHTTXIbNPOVK
+         10 9q013YSeArsZTSh6leJJE4OJKQ5BCdnQ
+         10 A67dzD7YWCP1YYLJRZ1U9rLO9ZpgsPNu
+         10 atbufd245zR1E9L82eOHKY5v7scHZLLG
+         10 cPcH5IdJYxO6vM8q006IXHuypAVGbTRp
+         10 CS1EbPmfoKMMVY6z9w8IS5dHkQdDvTQO
+         10 DgHzv7fYH97INXRrPmmphZKHMLkEOl6B
+         10 dNsZD8bqL8QTaFMzg1GmgXSJc9o8HMqr
+         10 dQAGOUE0OqoqUTFNZxDxPEuJVJ1n0516
+         10 DRw59WuT9wCmSl9vH68OKMaGsYSHrMFV
+         10 E3hJH5FG3FH1bCvhBl7Vzkyw7sLe6kYU
+         10 e9yTqnbiARl2VtknaQtMKIdSprkTWWfY
+          1 EjmOSvuAu7sGAHqHVcBDPirRe9T03kxl
+         10 eR5ZCvdhUcbCGp9SpdHE06Yj4j2xX9Ou
+The first number is the amount of times it shows up.
+
+Password is EjmOSvuAu7sGAHqHVcBDPirRe9T03kxl
