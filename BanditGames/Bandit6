@@ -1,0 +1,66 @@
+SSH in
+    ssh bandit6@bandit.labs.overthewire.org -p 2220#
+
+  The password for the next level is stored somewhere on the server and has all of the following properties:
+  
+  owned by user bandit7
+  owned by group bandit6
+  33 bytes in size
+
+We use the find command for this level, but we must run it from the root directory as the file can be anywhere in the server.
+
+    bandit6@bandit:~$ cd /
+    bandit6@bandit:/$ 
+We utilise the options that are available for the find command. These can be seen from the manual
+
+bandit6@bandit:/$ man find
+
+Looking at the manual, we try and see what options would help us find the file using the given information.
+    -user uname
+            File is owned by user uname (numeric user ID allowed).
+    -group gname
+            File belongs to group gname (numeric group ID allowed).
+
+
+find / -type f -user bandit7 -group bandit6 | du -b -a | grep 33
+This should be the command that finds the password as it searches for a file/directory that has a user named bandit7 and a group named bandit 6, along with the file size looking for specifically 33. 
+
+However, this outputs a large amount of files that is not possible to search through. 
+looking through the find manual again we find this option.
+    -size n[cwbkMG]
+                  File uses less than, more than or exactly n units of space, rounding up.  The following suffixes can be used:
+    
+                  `b'    for 512-byte blocks (this is the default if no suffix is used)
+    
+                  `c'    for bytes
+    
+                  `w'    for two-byte words
+    
+                  `k'    for kibibytes (KiB, units of 1024 bytes)
+    
+                  `M'    for mebibytes (MiB, units of 1024 * 1024 = 1048576 bytes)
+    
+                  `G'    for gibibytes (GiB, units of 1024 * 1024 * 1024 = 1073741824 bytes)
+We can use this instead of the du command to refine our search even further.
+    bandit6@bandit:/$ find / -type f -user bandit7 -group bandit6 -size 33c 
+    find: ‘/snap’: Permission denied
+    find: ‘/lost+found’: Permission denied
+    find: ‘/manpage/manpage3-pw’: Permission denied
+    find: ‘/drifter/drifter14_src/axTLS’: Permission denied
+    find: ‘/run/pam_pidns’: Permission denied
+    find: ‘/run/udisks2’: Permission denied
+    find: ‘/run/chrony’: Permission denied
+    find: ‘/run/user/12006’: Permission denied
+This gives us the least amount of files to look through, a majority of them are permission denied files which means they are being outputted through the standard error stream.
+We can direct those files to the /dev/null folder which will get rid of them for us. To do this we add 2> at the end.
+
+    bandit6@bandit:/$ find / -type f -user bandit7 -group bandit6 -size 33c 2> /dev/null
+    /var/lib/dpkg/info/bandit7.password
+    bandit6@bandit:/$ cat /var/lib/dpkg/info/bandit7.password
+    Bmnnvf82KzQlfxgAI2d1zYbr1u9pr3E3
+We find our password with that command and we use the cat command along with the full path to output the password.
+
+The password is Bmnnvf82KzQlfxgAI2d1zYbr1u9pr3E3
+
+
+
