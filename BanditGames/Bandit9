@@ -1,0 +1,46 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit9@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in the file data.txt in one of the few human-readable strings, preceded by several ‘=’ characters.
+
+Check the file
+    bandit9@bandit:~$ ls
+    data.txt
+    bandit9@bandit:~$ cat data.txt 
+    rBj��W��-��[�B�*�       }v 9m��\�Y��f�A��y�~.[o���#��o��N�T�ҝ��D�;��`t�&>�P����h��Văe��N�       ɛYL;E���]��y�$* �5�}�e-l�!����ΐ�N�����Rz­�zJP�0�k��퍁���0��ݵ�ơ��NEH
+                        xߙ�e��\�/r�E�_��Hʈ��˵�Z��O� cg�
+    ;^�I��������5}]ꖂ                                   �)�ኰ�lC �;(h�9���G�`>�R�u6ߓ7cb'�bS�4����Ơ%�N�6�`�o�.�1�bN��.����C���5�ňS��XX�o
+
+The strings command has to be used for this case.
+    NAME
+           strings - print the sequences of printable characters in files
+    
+    bandit9@bandit:~$ strings data.txt 
+    v 9m
+    ~.[o
+    7cb'
+    ?+APs
+    qDa%;
+    DpxVr^>
+    oEAcs
+    Klw)N
+    F~~T
+    N{BB1
+
+to reduce the output we know the password is preceded by several "=" so we can use grep
+    bandit9@bandit:~$ strings data.txt | grep =
+    ========== the
+    [==p+
+    =zW}
+    ========== password
+    Y========== is
+    k8c=
+    yo=-
+    =A@.
+    .=O],
+    =l"C"m
+    j=9$
+    ========== B0s2khmbT9u0geKuOoVGW3JZKhndE3BG
+    '=5G
+
+Password is B0s2khmbT9u0geKuOoVGW3JZKhndE3BG
