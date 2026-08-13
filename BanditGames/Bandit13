@@ -1,0 +1,105 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit13@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in /etc/bandit_pass/bandit14 and can only be read by user bandit14. For this level, you don’t get the next password, but you get a private SSH key that can be used to log into the next level. Look at the commands that logged you into previous bandit levels, and find out how to use the key for this level.
+If you need help with this level: a hint file can be found in the home directory.
+Make sure to read the error messages as they are informative.
+
+Check file.
+    bandit13@bandit:~$ ls
+    HINT  sshkey.private
+    bandit13@bandit:~$ cat sshkey.private 
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+    NhAAAAAwEAAQAAAYEAuCCoxSR6xDCnsm98kqan1x1JF3mfZ6kZa+BoAHetQ/91F4EKTfmE
+    E+Xs8yVgLhn1YL0TvyVswMzy33OeFJV/KEzef54V8yZo7jFcx+pQlOF6+BFRy+wsyLASV5
+    XxD/AtafdbVfLZFGTLC53kOFfT0VxokFmnTlIwRyxRJuNAWP9+fkAtbnfqkkixWqg0ZaLr
+    1fICYam6vb6ilmNfuiGHZyQNHeTkOKZgAaMnQW6bYlRjnkxsNNxk1pj0sT3MUQdLrPCdyh
+    ...
+    ePRmsGu5+mrreNJKicGyER0IqCBhbWyljGDKFMJNGb2gk0Mu9XNZk9y3lRDmPRcfBMekmV
+    fAjvy5rgAqyf/PsKznyZE12eGosH+CkfvWXdVRXd/hoOdWIZqaC+w8nLso6WLKhptWz8ke
+    SghZBBAsJW42cyenvyIdIzpVIcJpubAAAAwQDOOCoj/QwJLwXOd75KuUsfgI0Esq9vLSWl
+    Ds3fQGhnNMEJZfD9B/W8Xa7VClfPHDItcDoXiSgj4dQnS1JeeVBBUHXLULmKLmNLRNQjLD
+    0HSgyFYTpxl8tO5ZAlFRnGEwe7y9RvNeXp9zPQC2v1FTVQ2RdALiWvR4fGyDu0ER4hYiA/
+    WfqaBSBABkdhyWLiTBja/VncIHBZ04Bk1S9nwc0z6USyTXpTwpZIJw1O74Tjk+8X3or8WC
+    KN158egNsB+sEAAAAOcnVkeUBsb2NhbGhvc3QBAgMEBQ==
+    -----END OPENSSH PRIVATE KEY-----
+
+We have the key to ssh into the next level, we just need to extract it to our local computer.
+Lets get the path directory first.
+    bandit13@bandit:~$ pwd
+    /home/bandit13
+    bandit13@bandit:~$ exit
+    logout
+    Connection to bandit.labs.overthewire.org closed.
+    root@ubuntu:~$ 
+we exit back to our ubuntu server
+
+We can use the SCP command to transfer the key from the bandit server to our local one
+    root@ubuntu:~$ scp -P 2220 bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private .
+the . at the end refers to the current working directory, it can be replaced for any other destination.
+
+    root@ubuntu:~$ scp -P 2220 bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private .
+                             _                     _ _ _   
+                            | |__   __ _ _ __   __| (_) |_ 
+                            | '_ \ / _` | '_ \ / _` | | __|
+                            | |_) | (_| | | | | (_| | | |_ 
+                            |_.__/ \__,_|_| |_|\__,_|_|\__|
+                                                           
+    
+                          This is an OverTheWire game server. 
+                More information on http://www.overthewire.org/wargames
+    
+    backend: gibson-1
+    bandit13@bandit.labs.overthewire.org's password: 
+    sshkey.private                                                                                                                                                                     100% 2602    31.9KB/s   00:00    
+    root@ubuntu:~$ ls
+    filesystem  sshkey.private 
+
+Now that we have the sshkey we can use it to log into the next level.
+we use the -i option to specify using the ssh key.
+       -i identity_file
+               Selects  a  file  from  which  the  identity (private key) for public key authentication is read.  You can also specify a public key file to use the corresponding private key that is loaded in
+               ssh-agent(1) when the private key file is not present locally.  The default is ~/.ssh/id_rsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ecdsa_sk, ~/.ssh/id_ed25519,  ~/.ssh/id_ed25519_sk  and  ~/.ssh/id_dsa.
+               Identity  files may also be specified on a per-host basis in the configuration file.  It is possible to have multiple -i options (and multiple identities specified in configuration files).  If
+               no certificates have been explicitly specified by the CertificateFile directive, ssh will also try to load certificate information from the filename obtained by appending -cert.pub to identity
+               filenames.
+
+    root@ubuntu:~$ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+                             _                     _ _ _   
+                            | |__   __ _ _ __   __| (_) |_ 
+                            | '_ \ / _` | '_ \ / _` | | __|
+                            | |_) | (_| | | | | (_| | | |_ 
+                            |_.__/ \__,_|_| |_|\__,_|_|\__|
+                                                           
+    
+                          This is an OverTheWire game server. 
+                More information on http://www.overthewire.org/wargames
+    
+    backend: gibson-1
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    Permissions 0640 for 'sshkey.private' are too open.
+    It is required that your private key files are NOT accessible by others.
+    This private key will be ignored.
+    Load key "sshkey.private": bad permissions
+    bandit14@bandit.labs.overthewire.org's password: 
+When we try to login it comes with this error, Lets check the keys permissions
+    root@ubuntu:~$ ls -la
+    total 40
+    drwx------  4 root root 4096 Aug 13 05:31 .
+    drwxr-xr-x 22 root root 4096 Jul 20 19:05 ..
+    -rw-r--r--  1 root root 3234 Jul 20 19:05 .bashrc
+    -rw-------  1 root root   20 Aug 13 05:31 .lesshst
+    -rw-r--r--  1 root root  161 Apr 22  2024 .profile
+    drwx------  2 root root 4096 Aug 13 05:16 .ssh
+    drwxr-xr-x  7 root root 4096 Aug 13 05:15 .theia
+    -rw-r--r--  1 root root  109 Jul 20 19:05 .vimrc
+    -rw-r--r--  1 root root  165 Jul 20 19:05 .wget-hsts
+    lrwxrwxrwx  1 root root    1 Jul 20 19:05 filesystem -> /
+    -rw-r-----  1 root root 2602 Aug 13 05:26 sshkey.private
+As we can see, the group root has read permissions, lets get rid of that.
+    root@ubuntu:~$ chmod 600 sshkey.private 
+    root@ubuntu:~$ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+After getting rid of the group read permissions we can log into the next level. 
