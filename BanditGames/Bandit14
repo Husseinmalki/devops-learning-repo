@@ -1,0 +1,23 @@
+Log in via SSHkey from previous level.
+    root@ubuntu:~$ ssh -i sshkey.private bandit14@bandit.labs.overthewire.org -p 2220
+
+The password for the next level can be retrieved by submitting the password of the current level to port 30000 on localhost.
+The current password was given to us last level in the folder /etc/bandit_pass/bandit14
+
+Lets check the password.
+    bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+    aaWecNkG4FhxJQxz07uiwzVP6bJiYS65
+We need to submit this password to port 30000 on the localhost to get the next password.
+
+We can use the NC (netcat) command.
+    DESCRIPTION
+           The nc (or netcat) utility is used for just about anything under the sun involving TCP, UDP, or Unix-domain sockets.  It can open TCP connections, send UDP packets, listen on arbitrary TCP and  UDP  ports,
+           do port scanning, and deal with both IPv4 and IPv6.  Unlike telnet(1), nc scripts nicely, and separates error messages onto standard error instead of sending them to standard output, as telnet(1) does with
+           some.
+
+    
+    bandit14@bandit:~$ nc  localhost 30000 
+    aaWecNkG4FhxJQxz07uiwzVP6bJiYS65
+    Correct!
+    pbLYuZtTg4MgaqfJx8jbA9gKKGqM68A7
+Port 30000 is already set with a -l option to listen for incoming TCP connections, we connect to the port and send the password and receive the password for the next level.
