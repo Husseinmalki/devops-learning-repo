@@ -1,0 +1,45 @@
+SSH in
+
+There is a setuid binary in the homedirectory that does the following: it makes a connection to localhost on the port you specify as a commandline argument. 
+It then reads a line of text from the connection and compares it to the password in the previous level (bandit20). 
+If the password is correct, it will transmit the password for the next level (bandit21).
+
+NOTE: Try connecting to your own network daemon to see if it works as you think
+
+This seems a bit more complex to understand, to make it simpler, we are opening a port on our local host and setting it to listen to a connection.
+The port will take a commandline arguemnet, which will be sent by the setuid binary. The port will echo the last levels password.
+If the password matches what the setuid binary has it will output the correct password.
+
+Check folder.
+    bandit20@bandit:~$ ls
+    suconnect
+
+Lets build the port. 
+We will use netcat to create the port.
+       -l      Listen for an incoming connection rather than initiating a connection to a remote host.  The destination and port to listen  on
+               can  be specified either as non-optional arguments, or with options -s and -p respectively.  Cannot be used together with -x or
+               -z.  Additionally, any timeouts specified with the -w option are ignored.
+
+so we want this port to output the password for the previous level, we will use echo
+When using echo normally, it will create a trailing line which would create an error for the suconnect e.g
+
+    bandit20@bandit:~$ echo KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI
+    KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI
+    bandit20@bandit:~$ echo -n  KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI
+    KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZIbandit20@bandit:~$ 
+
+We then take the echo and pipe it into the Netcat open port command
+    bandit20@bandit:~$ echo -n KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI | nc -l -p 1212
+
+This however stops us from using the terminal, so we need a method to run the NC command in the background.
+This is done with the & modifier.
+    bandit20@bandit:~$ echo -n KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI | nc -l -p 1212 &
+    [2] 257
+Now we see the port is open on 1212 lets connect to it with suconnect.
+    bandit20@bandit:~$ ./suconnect 1212
+    Read: KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI
+    ERROR: This doesn't match the current password!
+    FAIL!
+    [2]+  Done                       echo -n KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI | nc -l -p 1212
+We get this error as the password was not enclosed in '' making it count the spaces as part of the password.
+
