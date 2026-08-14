@@ -1,0 +1,11 @@
+SSH in.
+    root@ubuntu:~$ ssh bandit18@bandit.labs.overthewire.org -p 2220
+
+The password for the next level is stored in a file readme in the homedirectory. Unfortunately, someone has modified .bashrc to log you out when you log in with SSH.
+
+When we try and log in via ssh we get automatically logged out.
+    
+    Byebye !
+    Connection to bandit.labs.overthewire.org closed.
+Therefore, we must extract the file from the homedirectory without connecting to the machine.
+We can do this by sending commands with SSH. e.g
