@@ -42,4 +42,18 @@ Now we see the port is open on 1212 lets connect to it with suconnect.
     FAIL!
     [2]+  Done                       echo -n KpsOfPkcP7i1FlIExk2QEjyt6dw8dxZI | nc -l -p 1212
 We get this error as the password was not enclosed in '' making it count the spaces as part of the password.
+After trying again, it still not does work. The error comes from a misunderstanding in the question, I assumed we were using the previous password and passing that through
+Instead I have to check what this current machines password is.
+        bandit20@bandit:~$ cat /etc/bandit_pass/bandit20
+        4pIjcunZ0fK2vmp3IwfG8Vf7VhxD6pOA
+        bandit20@bandit:~$ echo -n '4pIjcunZ0fK2vmp3IwfG8Vf7VhxD6pOA' | nc -l -p 1234 &
+        [1] 619
+        bandit20@bandit:~$ ./suconnect 1234
+        Read: 4pIjcunZ0fK2vmp3IwfG8Vf7VhxD6pOA
+        Password matches, sending next password
+        bW9kBv5WC3P4yoDyf12LSdGuNz5ka6hY
+        [1]+  Done                       echo -n '4pIjcunZ0fK2vmp3IwfG8Vf7VhxD6pOA' | nc -l -p 1234
+This gives us the correct output. 
+
+Password is bW9kBv5WC3P4yoDyf12LSdGuNz5ka6hY.
 
