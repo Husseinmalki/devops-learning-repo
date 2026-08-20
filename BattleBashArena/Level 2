@@ -1,0 +1,32 @@
+Level 2: Variables and Loops
+
+Mission: Create a script that outputs the numbers 1 to 10, one number per line.
+
+This level requires us to create a simple for loop where we output the numbers 1 to 10, we can do this by simply outputting the value of i each time it resets the loop
+
+
+bench:~/DevOps/BattleBashArena/Arena# touch number_generator.sh
+bench:~/DevOps/BattleBashArena/Arena# ./number_generator.sh 
+-sh: ./number_generator.sh: Permission denied
+bench:~/DevOps/BattleBashArena/Arena# chmod +x number_generator.sh 
+bench:~/DevOps/BattleBashArena/Arena# vi number_generator.sh
+    #!/bin/bash
+
+    for (( i=1; i<=10 ; i++))
+    do
+            echo "$i"
+    done
+The script takes i, and runs through the loop 10 times as shown with i<=10 and echos the value of i everytime leading to:
+
+bench:~/DevOps/BattleBashArena/Arena# ./number_generator.sh 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+bench:~/DevOps/BattleBashArena/Arena# 
