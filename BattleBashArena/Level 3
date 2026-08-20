@@ -1,0 +1,14 @@
+Level 3: Conditional Statements
+
+Mission: Write a script that checks if a file named hero.txt exists in the Arena directory. If it does, print Hero found!; otherwise, print Hero missing!.
+
+This level requires us to check the Arena directory, use an if statement to see if the hero.txt file exist and then print out a statement depending on that. 
+
+
+bench:~/DevOps/BattleBashArena/Arena# touch hero_checker.sh
+bench:~/DevOps/BattleBashArena/Arena# vi hero_checker.sh 
+bench:~/DevOps/BattleBashArena/Arena# ls
+archer.txt           hero_checker.sh      mage.txt             number_generator.sh  warrior.txt
+bench:~/DevOps/BattleBashArena/Arena# chmod +x hero_checker.sh 
+
+My initial thinking of the script is to make it check the Arena folder, list the files and then grep the hero.txt file. If it successfully greps then the hero is found, if not then the hero is not found.
