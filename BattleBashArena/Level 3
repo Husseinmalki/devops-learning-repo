@@ -11,4 +11,60 @@ bench:~/DevOps/BattleBashArena/Arena# ls
 archer.txt           hero_checker.sh      mage.txt             number_generator.sh  warrior.txt
 bench:~/DevOps/BattleBashArena/Arena# chmod +x hero_checker.sh 
 
-My initial thinking of the script is to make it check the Arena folder, list the files and then grep the hero.txt file. If it successfully greps then the hero is found, if not then the hero is not found.
+To solve this level we can use the find command which will search for files, along with that we use an if statement to see if hero.txt is found. Initially I compared the output of the find command to hero.txt 
+in the if statement but that did not work as find did not output the actual file it was looking for. 
+    #!/bin/bash
+    set -x
+    check=find hero.txt
+    
+    if [ $check == hero.txt ]
+    then
+            echo "Hero found!"
+    else
+            echo "Hero missing!"
+    fi
+
+
+    bench:~/DevOps/BattleBashArena/Arena# ./hero_checker.sh 
+    + check=find
+    + hero.txt
+    ./hero_checker.sh: line 3: hero.txt: command not found
+    + '[' == hero.txt ']'
+    ./hero_checker.sh: line 5: [: ==: unary operator expected
+    + echo 'Hero missing!'
+    Hero missing!
+
+Using the set -x command I can see the value of the lines before they are executed.
++ '[' == hero.txt ']' shows us that the check value is not storing anything meaning the issue is with storing the file name into the $check variable.
+
+I double checked this with a file already in the directory.
+    bench:~/DevOps/BattleBashArena/Arena# ./hero_checker.sh 
+    + check=find
+    + mage.txt
+    ./hero_checker.sh: line 3: mage.txt: command not found
+    + '[' == mage.txt ']'
+    ./hero_checker.sh: line 5: [: ==: unary operator expected
+    + echo 'Hero missing!'
+    Hero missing!
+I then changed this by adding a $ on the actual find command itself.
+    #!/bin/bash
+    set -x
+    check=$(find mage.txt)
+    
+    if [ $check == mage.txt ]
+    then
+            echo "Hero found!"
+    else
+            echo "Hero missing!"
+    fi
+
+And after testing with the mage.txt file that already exists.
+
+bench:~/DevOps/BattleBashArena/Arena# ./hero_checker.sh 
+++ find mage.txt
++ check=mage.txt
++ '[' mage.txt == mage.txt ']'
++ echo 'Hero found!'
+Hero found!
+
+We can see that the value of $check has the output of find stored in it.
