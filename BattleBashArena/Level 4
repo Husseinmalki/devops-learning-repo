@@ -77,7 +77,7 @@ With this we can create our for loop.
     done
 
 In theory this for loop should work, it goes through the amount of items in the array shown by i < count. 
-For every item it meets it checks if there is a .txt at the end (we use the * sign to signal we only care whats at the end of the file)
+For every item it meets it checks if there is a .txt at the end (we use the * sign to signal that any characters can come before.)
 lets test this. We get
     bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
     ./Backup.sh: line 9: [: too many arguments
@@ -102,4 +102,145 @@ that means when we call List[$i] we are printing out List+(index number)
 To compare the actual file name within the array we must expand the array its self e.g
 ${List[$i]}
 This is doing 2 expansions, the first we are expanding the array with $List and the second being each individual item depending on the value of i which is $i.
+#!/bin/bash
 
+List=($(ls -a))
+count=${#List[@]}
+
+for (( i = 0 ; i < count ; i++))
+do
+
+        if [ ${List[$i]} == *.txt ]
+        then
+                echo "Txt file : ${List[$i]}"
+        else
+                echo "No txt file: ${List[$i]}"
+        fi
+done
+When we output this we get 
+bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: .
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: ..
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: Backup.sh
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: archer.txt
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: hero_checker.sh
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: mage.txt
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: number_generator.sh
+        ./Backup.sh: line 9: [: too many arguments
+        No txt file: warrior.txt
+This shows the correct files are being tested.However, we can see that the if statement is not working correctly and we are receiving the too many arguments error.
+lets put back the set -x command to see whats happening.
+        bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+        + List=($(ls -a))
+        ++ ls -a
+        + count=8
+        + (( i = 0  ))
+        + (( i < count  ))
+        + '[' . == archer.txt mage.txt warrior.txt ']'
+        ./Backup.sh: line 9: [: too many arguments
+        + echo 'No txt file: .'
+        No txt file: .
+        + (( i++ ))
+        + (( i < count  ))
+        + '[' .. == archer.txt mage.txt warrior.txt ']'
+as we can see the *.txt has a pathname expansion performed on it, which means it expands to all the txt files in the directory.
+This is where the too many arguments error was coming from.
+This error comes from using a single set of []
+To fix this we use the double [[]] to apply bash's special condition rules which include not performing pathname expansion, it creates a bash condition construct. 
+
+After applying this we get:
+        bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+        + List=($(ls -a))
+        ++ ls -a
+        + count=8
+        + (( i = 0  ))
+        + (( i < count  ))
+        + [[ . == *.txt ]]
+        + echo 'No txt file: .'
+        No txt file: .
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ .. == *.txt ]]
+        + echo 'No txt file: ..'
+        No txt file: ..
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ Backup.sh == *.txt ]]
+        + echo 'No txt file: Backup.sh'
+        No txt file: Backup.sh
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ archer.txt == *.txt ]]
+        + echo 'Txt file : archer.txt'
+        Txt file : archer.txt
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ hero_checker.sh == *.txt ]]
+        + echo 'No txt file: hero_checker.sh'
+        No txt file: hero_checker.sh
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ mage.txt == *.txt ]]
+        + echo 'Txt file : mage.txt'
+        Txt file : mage.txt
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ number_generator.sh == *.txt ]]
+        + echo 'No txt file: number_generator.sh'
+        No txt file: number_generator.sh
+        + (( i++ ))
+        + (( i < count  ))
+        + [[ warrior.txt == *.txt ]]
+        + echo 'Txt file : warrior.txt'
+        Txt file : warrior.txt
+        + (( i++ ))
+        + (( i < count  ))
+The if statement now works correctly.
+As a side note if we were dealing with files that had a space inbetween them we would come up with another error as it would treat the space as 2 seperate files e.g my file.txt == 1) my and 2)file.txt
+To make the script robust we add the "" to the List variable.
+if [[ "${List[$i]}" == *.txt ]]
+This treats everything inside as 1 string.
+
+The next stage of this level is to copy the scripts that end in txt to the backup folder.
+We can use the copy command for this.
+The full complete code is:
+        #!/bin/bash
+        
+        List=($(ls -a))
+        count=${#List[@]}
+        
+        for (( i = 0 ; i < count ; i++))
+        do
+        
+                if [[ "${List[$i]}" == *.txt ]]
+                then
+                        cp "${List[$i]}" ../Backup/
+                        echo "Txt file : "${List[$i]}" Has been copied"
+                else
+                        echo "No txt file: ${List[$i]}"
+                fi
+        done
+This outputs 
+        bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+        No txt file: .
+        No txt file: ..
+        No txt file: Backup.sh
+        Txt file : archer.txt Has been copied
+        No txt file: hero_checker.sh
+        Txt file : mage.txt Has been copied
+        No txt file: number_generator.sh
+        Txt file : warrior.txt Has been copied
+We check if it has worked:
+        bench:~/DevOps/BattleBashArena/Arena# cd ..
+        bench:~/DevOps/BattleBashArena# cd Backup/
+        bench:~/DevOps/BattleBashArena/Backup# ls
+        archer.txt   mage.txt     warrior.txt
+Task has been successfully completed.
+Some additional improvements to think about is making the successfully copied message only print if it has been successfully copied by implementing another if statement. 
