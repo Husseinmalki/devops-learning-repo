@@ -68,3 +68,22 @@ bench:~/DevOps/BattleBashArena/Arena# ./hero_checker.sh
 Hero found!
 
 We can see that the value of $check has the output of find stored in it.
+
+The final script being 
+#!/bin/bash
+
+check=$(find hero.txt)
+
+if [ $check == hero.txt ]
+then
+        echo "Hero found!"
+else
+        echo "Hero missing!"
+fi
+
+which outputs 
+
+bench:~/DevOps/BattleBashArena/Arena# ./hero_checker.sh
+find: hero.txt: No such file or directory
+./hero_checker.sh: line 5: [: ==: unary operator expected
+Hero missing!
