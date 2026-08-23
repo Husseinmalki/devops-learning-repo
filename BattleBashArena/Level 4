@@ -1,0 +1,105 @@
+Level 4: File Manipulation
+
+Mission: Create a script that copies all .txt files from the Arena directory to a new directory called Backup.
+
+We have to run through the Arena directory, search for all files that end in .txt and then copy them to a new directory called backup.
+The backup directory has to live outside the Arena directory (if the Arena directory gets affected it won't affect the backups)
+
+bench:~/DevOps/BattleBashArena/Arena# touch Backup.sh
+bench:~/DevOps/BattleBashArena/Arena# vi Backup.sh
+
+we will have to use a loop to go through each file, we can use a for loop with the amount of files in a directory as the number to reach for amount of loops.
+This is safer than a while loop which could cause an endless loop.
+When we check each file we would have an if statement which would check if it ends in .txt.
+
+Lets go line by line explaining design choices.
+
+List=($(ls -a)) 
+The ls -a command will show a list of files in a directory including the hidden ones, we put these in brackets to create an array of the different files that show up.
+If we created the List like this List=$(ls -a) it would treat the whole output as 1 string and would not let us select each file independantly. 
+We can test this theory by:
+    #!/bin/bash
+    set -x
+    List=$(ls -a)
+    echo $List
+    bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+    ++ ls -a
+    + List=$'.\n..\nBackup.sh\narcher.txt\nhero_checker.sh\nmage.txt\nnumber_generator.sh\nwarrior.txt'
+    + echo . .. Backup.sh archer.txt hero_checker.sh mage.txt number_generator.sh warrior.txt
+    . .. Backup.sh archer.txt hero_checker.sh mage.txt number_generator.sh warrior.txt
+This prints out the whole list but if we try print out a specific file.
+    #!/bin/bash
+    set -x
+    List=$(ls -a)
+    echo ${List[0]}
+we get the same list
+    bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+    ++ ls -a
+    + List=$'.\n..\nBackup.sh\narcher.txt\nhero_checker.sh\nmage.txt\nnumber_generator.sh\nwarrior.txt'
+    + echo . .. Backup.sh archer.txt hero_checker.sh mage.txt number_generator.sh warrior.txt
+    . .. Backup.sh archer.txt hero_checker.sh mage.txt number_generator.sh warrior.txt
+
+Therefore we must add the extra set of brackets to make it an array with the seperators being the empty lines.
+    #!/bin/bash
+    set -x
+    List=($(ls -a))
+    echo ${List[2]}
+
+    bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+    + List=($(ls -a))
+    ++ ls -a
+    + echo Backup.sh
+
+The array has been created under the variable List (bad naming I know).
+We know want to know how many items are in the array.
+we do this by:
+count=${#list[@]}
+When the # key is placed after the { it tells it to count whatever else is in the variable (or in the } in this instance).
+When we place the @ symbole within the [] it is telling it to select all the items within the array. 
+So in theory we are telling the command line to count ALL the items within the array and place them within the variable count.
+
+With this we can create our for loop.
+
+    #!/bin/bash
+    
+    List=($(ls -a))
+    count=${#List[@]}
+    
+    for (( i = 0 ; i < count ; i++))
+    do
+    
+            if [ List[$i] == *.txt ]
+            then
+                    echo "Txt file : List[$i]"
+            else
+                    echo "No txt file: List[$i]"
+            fi
+    done
+
+In theory this for loop should work, it goes through the amount of items in the array shown by i < count. 
+For every item it meets it checks if there is a .txt at the end (we use the * sign to signal we only care whats at the end of the file)
+lets test this. We get
+    bench:~/DevOps/BattleBashArena/Arena# ./Backup.sh
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[0]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[1]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[2]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[3]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[4]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[5]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[6]
+    ./Backup.sh: line 9: [: too many arguments
+    No txt file: List[7]
+
+I learnt something important regarding the $ command, it actually expands what ever expression is within it and is not just a placeholder to make a variable.
+that means when we call List[$i] we are printing out List+(index number)
+To compare the actual file name within the array we must expand the array its self e.g
+${List[$i]}
+This is doing 2 expansions, the first we are expanding the array with $List and the second being each individual item depending on the value of i which is $i.
+
