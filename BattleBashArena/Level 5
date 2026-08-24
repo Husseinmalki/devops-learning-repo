@@ -1,0 +1,50 @@
+Level 5: The Boss Battle - Combining Basics
+
+Mission: Combine what you've learned! Write a script that:
+
+1. Creates a directory names 'Battlefield'
+2. Inside Battlefield, create files named knight.txt, sorcerer.txt, and rogue.txt.
+3. Check if knight.txt exists; if it does, move it to a new directory called Archive.
+4. List the contents of both Battlefield and Archive.
+
+This seems like a simple script where we create the directory and the files and then use an if statement to check if knight.txt exists and then be able to move them 
+to an archive directory.
+
+    #!/bin/bash
+    
+    mkdir Battlefield
+    mkdir Archive
+    
+    touch Battlefield/knight.txt | touch Battlefield/sorcerer.txt | touch Battlefield/rogue.txt
+    
+    Array=($(ls -a Battlefield/))
+    Count=${#Array[@]}
+    
+    for ((i = 0 ; i < Count ; i++))
+    do
+            if [[ "${Array[$i]}" == knight.txt ]]
+            then
+                    mv Battlefield/knight.txt Archive/
+                    echo "Knight moved to archive"
+                    break
+            else
+                    echo "Knight does not exist"
+            fi
+    done
+    
+    echo $(ls Battlefield/)
+    echo $(ls Archive/)
+The script creates the txt files uses the same check as used in level 4 to check if the knight.txt exists in the Battlefield directory.
+if it does it moves it to the archive and then breaks out of the loop to not waste resources.
+it then prints out the Battle field and Archive directories.
+We can see the output from this here:
+    bench:~/DevOps/BattleBashArena# ls
+    Arena           Backup          Boss_battle.sh
+    bench:~/DevOps/BattleBashArena# ./Boss_battle.sh
+    Knight does not exist
+    Knight does not exist
+    Knight moved to archive
+    rogue.txt sorcerer.txt
+    knight.txt
+    bench:~/DevOps/BattleBashArena# ls
+    Archive         Arena           Backup          Battlefield     Boss_battle.sh
