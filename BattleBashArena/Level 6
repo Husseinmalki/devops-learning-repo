@@ -1,0 +1,12 @@
+Level 6: Argument Parsing
+
+Mission: Write a script that accepts a filename as an argument and prints the number of lines in that file. If no filename is provided, display a message saying 'No file provided'.
+
+This level we work with functions and arguments that are passed into them.
+It is relatively easy where if a file is entered it is parsed through and the number of lines are printed.
+If no filename is passed in we provide the message "no file provided".
+We can also solidify this script by making sure that directories are also accounted for if they are passed in as a variable. 
+
+To check if a file is inputed we can use the $# function which checks how many arguments were inputted. 
+
+We input the file and then run it through a while loop using the read command to run through each line.
