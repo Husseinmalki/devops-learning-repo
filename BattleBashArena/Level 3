@@ -107,7 +107,7 @@ In the end after doing some research I found that the shorter solution is to use
 which outputs the correct answer.
 #!/bin/bash
 
-if [ -f "Arena/hero.txt" ]; then
+if [ -f "hero.txt" ]; then
     echo "Hero found!"
 else
     echo "Hero missing!"
