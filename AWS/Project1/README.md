@@ -185,6 +185,7 @@ We already have the SG created so we just select that along with the other optio
 Clicking advanced options and then at the bottom, add the user data.
 <img width="1083" height="479" alt="image" src="https://github.com/user-attachments/assets/c15b7f41-f11f-4f9c-8032-71e19a75ad8d" />
 
+#!/bin/bash
 dnf install -y httpd
 echo "<h1>Hello from $(hostname -f)</h1>" > /var/www/html/index.html
 systemctl enable --now httpd
