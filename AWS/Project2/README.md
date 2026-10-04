@@ -36,3 +36,12 @@ Bonus (Optional)
 Add a Route53 DNS name and point it to the ALB DNS name via ALIAS record type. 
 Add an HTTPS listener with ACM
 Add an Auto Scaling Group behind the ALB
+
+
+Step 1 
+Create the VPC
+<img width="1631" height="691" alt="image" src="https://github.com/user-attachments/assets/be798d6b-4475-471d-9c2b-b07bcca9ef0b" />
+
+Step 2
+Setting up 2 different EC2 instances in the VPC, they should be in different AZs and have a simple web server interface running. We will reuse the data from the previous project
+
