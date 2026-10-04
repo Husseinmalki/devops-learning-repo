@@ -3,54 +3,68 @@ Objective
 Create a custom VPC with one public and one private subnet, set up the correct routing for internet access, and deploy EC2 instances across them.
 
 Tasks
+---
 
 1. Create the VPC
 
-Custom VPC (e.g. 10.0.0.0/16)
-One public subnet
-One private subnet
+- Custom VPC (e.g. 10.0.0.0/16)
+- One public subnet
+- One private subnet
 
+---
 2. Internet Access
 
-Create and attach an Internet Gateway
-Create an Elastic IP
-Create a NAT Gateway in the public subnet
+- Create and attach an Internet Gateway
+- Create an Elastic IP
+- Create a NAT Gateway in the public subnet
 
+---
 3. Route Tables
 
-Public route table → default route via IGW
-Private route table → default route via NAT Gateway
 
+- Public route table → default route via IGW
+- Private route table → default route via NAT Gateway
+
+---
 4. EC2 Instances
 
-Public EC2: launch in public subnet with public IP
-Private EC2: launch in private subnet without public IP
 
+- Public EC2: launch in public subnet with public IP
+- Private EC2: launch in private subnet without public IP
+
+---
 5. Security
 
-Public EC2 SG: allow SSH/HTTP only from your IP
-Private EC2 SG: allow only internal access (e.g. from public EC2 or Bastion host)
 
+- Public EC2 SG: allow SSH/HTTP only from your IP
+- Private EC2 SG: allow only internal access (e.g. from public EC2 or Bastion host)
+
+---
 Bonus (Optional)
+ 
 
-Deploy a Bastion Host to access the private EC2
-Enable CloudWatch monitoring on instances
+- Deploy a Bastion Host to access the private EC2
+- Enable CloudWatch monitoring on instances
 
 We will be assuming this Project will be for an enterprise business with a large amount of users.
 
+---
 Step 1 
 <img width="1870" height="305" alt="image" src="https://github.com/user-attachments/assets/ba70c13e-8418-40fe-8ac4-0dbd7b3284be" />
 
+---
 Step 2 
 Add a tag and click create VPC at the bottom of the screen.
 <img width="1593" height="829" alt="image" src="https://github.com/user-attachments/assets/5f203b76-36b1-4d47-b5ab-4cd9195b48ab" />
 
 <img width="1857" height="790" alt="image" src="https://github.com/user-attachments/assets/68fe9624-a8c1-4675-8e0e-649a60e301c2" />
 
+---
 Step 3
 Click subnet on the side bar and create subnet 
 <img width="1866" height="330" alt="image" src="https://github.com/user-attachments/assets/3f525dda-97a1-4e2f-be2c-7cae044536ee" />
 
+---
 Step 4
 
 Click the VPC we just created <img width="1225" height="308" alt="image" src="https://github.com/user-attachments/assets/38fbe496-54e1-4cc9-add9-ad3db34b91b7" />
@@ -64,6 +78,7 @@ Make sure to add the tags
 
 They should now show up on the Subnets tab <img width="1617" height="61" alt="image" src="https://github.com/user-attachments/assets/0adf5f88-f544-4c31-876a-68b6f122e25a" />
 
+---
 Step 5
 
 Click on internet gateway on the sidebar
@@ -78,6 +93,7 @@ Click on the Internet gateway - Actions - Attach to VPC
 <img width="1467" height="320" alt="image" src="https://github.com/user-attachments/assets/b7ffcfd3-f8b8-4e5a-848a-156950ec271c" />
 Select the created VPC and attach. <img width="611" height="164" alt="image" src="https://github.com/user-attachments/assets/3f689b28-8845-474a-8e70-e8a29630e5f7" />
 
+---
 Step 6
 We will create an elastic IP now
 Click elastic IP and allocate elastic IP address.
@@ -87,7 +103,8 @@ Select the network border group that your VPC uses, we use eu-west-2a so the IP 
 <img width="1697" height="690" alt="image" src="https://github.com/user-attachments/assets/5c2e9e4a-368e-4e27-99fc-419dcfc15ad3" />
 <img width="1605" height="715" alt="image" src="https://github.com/user-attachments/assets/8e1b5e36-4a8d-491d-ab2b-af7110617466" />
 
-Step 6 
+---
+Step 7 
 Create a NAT gateway
 <img width="1866" height="517" alt="image" src="https://github.com/user-attachments/assets/397ca5b0-6f8f-42ea-a449-6cc470af35e7" />
 When selecting the options, select zonal for the availability mode, Select the public subnet to attach it to and then select the elastic IP created.
@@ -97,8 +114,8 @@ When created it will give a pending state, this takes some time.
 After a minute it will become available, with the public and private IPs attached to it.
 <img width="1617" height="160" alt="image" src="https://github.com/user-attachments/assets/d8303e11-3179-417b-872b-e3f72fdc99e5" />
 
-
-Step 7
+---
+Step 8
 Click on route table and then click Add route table, we will need a route table for each subnet.
 <img width="1860" height="315" alt="image" src="https://github.com/user-attachments/assets/23876cdc-39c8-4bd3-9667-e8295ba9f05b" />
 Create one for the private subnet and then one for the public.
@@ -128,7 +145,9 @@ Same done here for public
 This is how your Network should look right now.
 <img width="1619" height="751" alt="image" src="https://github.com/user-attachments/assets/41f765ee-2349-41b4-95c7-a852bb1ad92b" />
 
-Step 8
+
+---
+Step 9
 Search for EC2 in the search bar and click launch instance.
 <img width="1305" height="855" alt="image" src="https://github.com/user-attachments/assets/c5505163-0a55-4048-9a29-344b42fac7b8" />
 
@@ -164,14 +183,16 @@ We add an HTTP type rule and then select my IP.
 To test our EC2 instance we added this User data to create a simple web server we could access on HTTP
 <img width="1677" height="692" alt="image" src="https://github.com/user-attachments/assets/f8e6b286-056c-4541-80ac-ee31f3076105" />
 
+---
 Debug:
 We are trying to access our public EC2 instance on an http webserver but are met with 
-C:\Users\Husse>curl -v http://18.133.226.224
-*   Trying 18.133.226.224:80...
-* connect to 18.133.226.224 port 80 from 0.0.0.0 port 58140 failed: Connection refused
-* Failed to connect to 18.133.226.224:80 after 2082 ms: Could not connect to server
-* closing connection #0
-curl: (7) Failed to connect to 18.133.226.224:80 after 2082 ms: Could not connect to server
+      
+      C:\Users\Husse>curl -v http://18.133.226.224
+      *   Trying 18.133.226.224:80...
+      * connect to 18.133.226.224 port 80 from 0.0.0.0 port 58140 failed: Connection refused
+      * Failed to connect to 18.133.226.224:80 after 2082 ms: Could not connect to server
+      * closing connection #0
+      curl: (7) Failed to connect to 18.133.226.224:80 after 2082 ms: Could not connect to server
 
 We are able to reach the instance but nothing is listening on port 80
 
@@ -185,11 +206,11 @@ We already have the SG created so we just select that along with the other optio
 Clicking advanced options and then at the bottom, add the user data.
 <img width="1083" height="479" alt="image" src="https://github.com/user-attachments/assets/c15b7f41-f11f-4f9c-8032-71e19a75ad8d" />
 
-#!/bin/bash
-dnf install -y httpd
-echo "<h1>Hello from $(hostname -f)</h1>" > /var/www/html/index.html
-systemctl enable --now httpd
-systemctl is-active httpd && echo "httpd is running"
+      #!/bin/bash
+      dnf install -y httpd
+      echo "<h1>Hello from $(hostname -f)</h1>" > /var/www/html/index.html
+      systemctl enable --now httpd
+      systemctl is-active httpd && echo "httpd is running"
 
 Now it works
 <img width="776" height="84" alt="image" src="https://github.com/user-attachments/assets/2f887238-62ac-40dd-9843-cdd4c6213714" />
@@ -197,43 +218,46 @@ Now it works
 And we can SSH into it.
 <img width="747" height="427" alt="image" src="https://github.com/user-attachments/assets/f504b2f4-1cf3-414a-9a7d-60b3c5fbeeb6" />
 
+
+---
 Step 9 
 
 We can now connect to the Private EC2 instance via the Public EC2 instance using the public EC2 instance as a bastion host/jumpbox.
 We can use the -A option on SSH to pass on the key to the jump box.
 
-hussein@bench:~/.ssh$ ssh -A -i "PubKey.pem" ec2-user@18.130.239.163
-** WARNING: connection is not using a post-quantum key exchange algorithm.
-** This session may be vulnerable to "store now, decrypt later" attacks.
-** The server may need to be upgraded. See https://openssh.com/pq.html
-   ,     #_
-   ~\_  ####_        Amazon Linux 2023
-  ~~  \_#####\
-  ~~     \###|
-  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
-   ~~       V~' '->
-    ~~~         /
-      ~~._.   _/
-         _/ _/
-       _/m/'
-Last login: Sat Oct  3 14:40:24 2026 from 80.2.186.171
+      hussein@bench:~/.ssh$ ssh -A -i "PubKey.pem" ec2-user@18.130.239.163
+      ** WARNING: connection is not using a post-quantum key exchange algorithm.
+      ** This session may be vulnerable to "store now, decrypt later" attacks.
+      ** The server may need to be upgraded. See https://openssh.com/pq.html
+         ,     #_
+         ~\_  ####_        Amazon Linux 2023
+        ~~  \_#####\
+        ~~     \###|
+        ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+         ~~       V~' '->
+          ~~~         /
+            ~~._.   _/
+               _/ _/
+             _/m/'
+      Last login: Sat Oct  3 14:40:24 2026 from 80.2.186.171
 
 From this we can simply just ssh into the private EC2 instance.
 
-[ec2-user@ip-10-0-18-52 ~]$ ssh  ec2-user@10.0.14.180
+      [ec2-user@ip-10-0-18-52 ~]$ ssh  ec2-user@10.0.14.180
+      
+         ,     #_
+         ~\_  ####_        Amazon Linux 2023
+        ~~  \_#####\
+        ~~     \###|
+        ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+         ~~       V~' '->
+          ~~~         /
+            ~~._.   _/
+               _/ _/
+             _/m/'
+      Last login: Sat Oct  3 14:51:24 2026 from 10.0.18.52
 
-   ,     #_
-   ~\_  ####_        Amazon Linux 2023
-  ~~  \_#####\
-  ~~     \###|
-  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
-   ~~       V~' '->
-    ~~~         /
-      ~~._.   _/
-         _/ _/
-       _/m/'
-Last login: Sat Oct  3 14:51:24 2026 from 10.0.18.52
-
+---
 Step 10
 
 To enable cloudwatch monitoring, we need to configure a role to allow the SSM agent to connect to the Systems manager. Without the role we get this error.
