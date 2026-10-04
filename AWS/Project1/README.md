@@ -79,7 +79,7 @@ Click on the Internet gateway - Actions - Attach to VPC
 Select the created VPC and attach. <img width="611" height="164" alt="image" src="https://github.com/user-attachments/assets/3f689b28-8845-474a-8e70-e8a29630e5f7" />
 
 Step 6
-We will create an elastic IP now, we must make sure the elastic IP is in use otherwise AWS will charge us for usage.
+We will create an elastic IP now
 Click elastic IP and allocate elastic IP address.
 <img width="1864" height="460" alt="image" src="https://github.com/user-attachments/assets/4a397a83-3bd5-4c55-ad88-91d15945194b" />
 
